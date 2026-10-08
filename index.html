@@ -15,11 +15,11 @@
 </head>
 <body class="bg-stone-50 text-stone-800 font-sans antialiased overflow-hidden">
     <header class="bg-amber-900 text-white shadow-md h-20 flex items-center justify-between px-6 z-50 relative">
-        <h1 class="text-xl md:text-2xl font-bold flex items-center gap-2">
-            <span>☕</span> 高雄車站 7 公里內高評價特色咖啡廳地圖
+        <h1 class="text-lg md:text-2xl font-bold flex items-center gap-2">
+            <span>☕</span> 高雄車站 7 公里內高評價特色咖啡廳 (精選 53 間真實店家)
         </h1>
-        <div class="text-xs md:text-sm bg-amber-800/80 border border-amber-700 px-3 py-1.5 rounded-full shadow-inner">
-            已收錄 <span id="cafe-count" class="font-bold text-amber-200"></span> 間真實高評價咖啡廳
+        <div id="status-badge" class="text-xs md:text-sm bg-amber-800/90 border border-amber-700 px-3 py-1.5 rounded-full shadow-inner">
+            已載入 <span id="cafe-count">53</span> 間高評價真實咖啡廳
         </div>
     </header>
 
@@ -107,15 +107,18 @@
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
-        // Kaohsiung Station Center Marker
         const stationMarker = L.marker([22.6394, 120.3015]).addTo(map);
         stationMarker.bindPopup("<div class='p-1'><b class='text-amber-900'>📍 高雄車站 (中心點)</b><br><span class='text-xs text-stone-500'>半徑 7 公里核心區域</span></div>");
 
         let markers = [];
         const cafeListContainer = document.getElementById('cafe-list');
-        document.getElementById('cafe-count').textContent = cafes.length;
+        const cafeCountEl = document.getElementById('cafe-count');
+        if (cafeCountEl) {
+            cafeCountEl.textContent = cafes.length;
+        }
 
         function renderCafes(filteredCafes) {
+            if (!cafeListContainer) return;
             cafeListContainer.innerHTML = '';
             markers.forEach(m => map.removeLayer(m));
             markers = [];
@@ -159,16 +162,19 @@
 
         renderCafes(cafes);
 
-        document.getElementById('search-input').addEventListener('input', (e) => {
-            const keyword = e.target.value.toLowerCase().trim();
-            const filtered = cafes.filter(c => 
-                c.店名.toLowerCase().includes(keyword) || 
-                c.地址.toLowerCase().includes(keyword) || 
-                c.種類.toLowerCase().includes(keyword) ||
-                c.推薦品項與價格.toLowerCase().includes(keyword)
-            );
-            renderCafes(filtered);
-        });
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const keyword = e.target.value.toLowerCase().trim();
+                const filtered = cafes.filter(c => 
+                    c.店名.toLowerCase().includes(keyword) || 
+                    c.地址.toLowerCase().includes(keyword) || 
+                    c.種類.toLowerCase().includes(keyword) ||
+                    c.推薦品項與價格.toLowerCase().includes(keyword)
+                );
+                renderCafes(filtered);
+            });
+        }
     </script>
 </body>
 </html>
